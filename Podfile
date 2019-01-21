@@ -8,5 +8,6 @@ target 'ObjC_Searcher' do
   # Pods for ObjC_Searcher
   pod 'AFNetworking'
   pod 'FLAnimatedImage'
+  pod 'SDWebImage','~>5.0.0-beta3'
 
 end

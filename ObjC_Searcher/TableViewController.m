@@ -113,16 +113,16 @@
     self.stringToSearch = searchText;
     SEL reloadSelector = @selector(reload);
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:reloadSelector object:nil];
-    [self performSelector:reloadSelector withObject:nil afterDelay:0.2];
+    [self performSelector:reloadSelector withObject:nil afterDelay:0.3];
 }
 
 - (void)reload {
     [self.gifs removeAllObjects];
-    
-    [self.tableView reloadData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
     
     self.nextOne = 0;
-    
     self.imageCache = [[NSCache alloc] init];
     
     [self.params setObject:[NSString stringWithFormat:@"%d", self.nextOne] forKey:@"pos"];
@@ -166,7 +166,6 @@
     }
 }
 
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -183,12 +182,22 @@
     TableViewCell *myCell = (TableViewCell*) cell;
     
     bool loadFromUrl = true;
-    //myCell.gifImage.image = nil;
+    myCell.gifImage.image = nil;
     
     if(loadFromUrl) {
-        
-        FLAnimatedImage *image = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[self.gifs objectAtIndex:indexPath.row]]]];
-        myCell.gifImage.animatedImage = image;
+
+        [myCell.gifImage sd_setImageWithURL:[self.gifs objectAtIndex:indexPath.row] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            
+            BOOL isValid = [self.tableView numberOfSections] > indexPath.section &&
+            [self.tableView numberOfRowsInSection:indexPath.section] > indexPath.row;
+            
+            if (isValid) {
+                NSLog(@"Valid");
+                [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            }
+            
+            
+        }];
         
     }
     else {
@@ -197,7 +206,6 @@
     
     return cell;
 }
-
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 300.0;

@@ -7,13 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FLAnimatedImage.h"
+#import <SDWebImage/SDAnimatedImageView+WebCache.h>
+#import <SDWebImage/SDAnimatedImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TableViewCell : UITableViewCell
 
-@property (weak, nonatomic) IBOutlet FLAnimatedImageView *gifImage;
+@property (weak, nonatomic) IBOutlet SDAnimatedImageView *gifImage;
 
 @end
 
