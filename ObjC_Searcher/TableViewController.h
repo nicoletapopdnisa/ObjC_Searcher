@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <AFNetworking.h>
+#import "SDImageCache.h"
 
 #define GIF_URL   @"https://api.tenor.com/v1/search?"
 #define API_KEY   @"AWMHIP5GIBF3"
@@ -21,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, retain) NSMutableArray *gifs;
 @property (nonatomic, retain) NSMutableDictionary *params;
 @property (nonatomic, retain) NSString *stringToSearch;
-@property (nonatomic, retain) NSCache *imageCache;
+@property (nonatomic, retain) SDImageCache *imageCache;
 
 -(void)initalizeParameters;
 -(void)setUpSearchBar;

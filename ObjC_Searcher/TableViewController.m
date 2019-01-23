@@ -33,7 +33,7 @@
     
     self.stringToSearch = @"";
     
-    self.imageCache = [[NSCache alloc] init];
+    self.imageCache = SDImageCache.sharedImageCache;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -123,7 +123,7 @@
     });
     
     self.nextOne = 0;
-    self.imageCache = [[NSCache alloc] init];
+    [self.imageCache clearMemory];
     
     [self.params setObject:[NSString stringWithFormat:@"%d", self.nextOne] forKey:@"pos"];
     [self.params setObject:self.stringToSearch forKey:@"q"];
@@ -180,29 +180,29 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"myTableViewCell" forIndexPath:indexPath];
     TableViewCell *myCell = (TableViewCell*) cell;
-    
-    bool loadFromUrl = true;
     myCell.gifImage.image = nil;
     
-    if(loadFromUrl) {
-
+    SDAnimatedImage *image = (SDAnimatedImage *)[imageCache imageFromMemoryCacheForKey:[self.gifs objectAtIndex:indexPath.row]];
+    
+    if(!image) {
         [myCell.gifImage sd_setImageWithURL:[self.gifs objectAtIndex:indexPath.row] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
             
             BOOL isValid = [self.tableView numberOfSections] > indexPath.section &&
             [self.tableView numberOfRowsInSection:indexPath.section] > indexPath.row;
             
             if (isValid) {
-                NSLog(@"Valid");
+                [self->imageCache storeImageToMemory:myCell.gifImage.image forKey:[self.gifs objectAtIndex:indexPath.row]];
                 [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             }
             
-            
         }];
-        
     }
+    
     else {
-        
+        myCell.gifImage.image = image;
     }
+    
+    
     
     return cell;
 }
