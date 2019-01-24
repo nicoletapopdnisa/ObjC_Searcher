@@ -180,7 +180,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"myTableViewCell" forIndexPath:indexPath];
     TableViewCell *myCell = (TableViewCell*) cell;
-    myCell.gifImage.image = nil;
+    [myCell.gifImage setImage:[[UIImage alloc] init]];
     
     SDAnimatedImage *image = (SDAnimatedImage *)[imageCache imageFromMemoryCacheForKey:[self.gifs objectAtIndex:indexPath.row]];
     
@@ -207,6 +207,14 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSInteger totalNumberOfRows = [tableView numberOfRowsInSection:indexPath.section];
+    
+    if(indexPath.row == totalNumberOfRows - 1) {
+        [self getGifData];
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 300.0;
     
@@ -218,10 +226,12 @@
 
 #pragma mark - ScrollView delegate methods
 
+/*
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     if(scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
         [self getGifData];
     }
 }
+ */
 
 @end
